@@ -71,7 +71,6 @@ all_data_with_date = merge(all_jhu, ghsi_prepped, by=c('country'), all=TRUE)
 
 write.csv(all_data_with_date, paste0(prepped, "all_data_with_date.csv"))
 
-
 #--------------------------------------------
 # CREATE CUMULATIVE DATASET
 #--------------------------------------------
@@ -79,5 +78,18 @@ write.csv(all_data_with_date, paste0(prepped, "all_data_with_date.csv"))
 all_data_with_date[, date:=as.Date(date, format="%m/%d/%y")]
 all_data_cumulative = all_data_with_date[date=="2020-12-31"] # We should make sure no countries are getting left out by this! 
 
+# Merge on population 
+population = fread(paste0(raw, "world_bank_population.csv"))
+# The population was stored in thousands of people, so multiply by 1,000 
+population[, pop_2019:=pop_2019*1000]
+
+# -------------------------------------
+# Data cleaning for population here 
+
+all_data_cumulative = merge(all_data_cumulative, population, by='country', all=TRUE)
+
+all_data_cumulative[, cases_per_capita:=cases/pop_2019]
+all_data_cumulative[, deaths_per_capita:=deaths/pop_2019]
+all_data_cumulative[, case_fatality_ratio:=cases_per_capita/deaths_per_capita]
 write.csv(all_data_cumulative, paste0(prepped, "all_data_cumulative.csv"))
 
