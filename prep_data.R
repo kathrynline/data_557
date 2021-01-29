@@ -70,3 +70,14 @@ all_jhu = all_jhu[, .(cases=sum(cases), deaths=sum(deaths)), by=c('country', 'da
 all_data_with_date = merge(all_jhu, ghsi_prepped, by=c('country'), all=TRUE)
 
 write.csv(all_data_with_date, paste0(prepped, "all_data_with_date.csv"))
+
+
+#--------------------------------------------
+# CREATE CUMULATIVE DATASET
+#--------------------------------------------
+# This assumes the data is cumulative, and grabs the last date of data available for 2020 by country. 
+all_data_with_date[, date:=as.Date(date, format="%m/%d/%y")]
+all_data_cumulative = all_data_with_date[date=="2020-12-31"] # We should make sure no countries are getting left out by this! 
+
+write.csv(all_data_cumulative, paste0(prepped, "all_data_cumulative.csv"))
+
