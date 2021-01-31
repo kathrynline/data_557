@@ -17,7 +17,7 @@ prepped = "prepped_data/"
 #-------------------------------------------
 # FORMAT GHSI SUMMARY DATA 
 #-------------------------------------------
-ghsi_raw = fread(paste0(raw, "ghsi_summary.csv"))
+ghsi_raw = fread(paste0(raw, "ghsi_summary.csv"), encoding = "UTF-8") #added encoding
 ghsi_prepped = data.table()
 for (i in seq(1, ncol(ghsi_raw), by=2)){
   subset = ghsi_raw[, i:(i+1)]
@@ -30,6 +30,12 @@ for (i in seq(1, ncol(ghsi_raw), by=2)){
 
 #-------------------
 # Manual edits to go here
+ghsi_prepped$country <- sub("St ", "Saint ", ghsi_prepped$country) #mapped St to Saint
+ghsi_prepped$country <- iconv(ghsi_prepped$country, from = 'UTF-8', to = 'ASCII//TRANSLIT') #dropped accents
+ghsi_prepped$country <- sub("Czech Republic", "Czechia", ghsi_prepped$country) #Czechia
+ghsi_prepped$country <- sub("eSwatini \\(Swaziland\\)", "Eswatini", ghsi_prepped$country) #Eswatini
+ghsi_prepped$country <- sub("Saint Vincent and The Grenadines", "Saint Vincent and the Grenadines", ghsi_prepped$country) #St Vincent
+ghsi_prepped <- subset(ghsi_prepped, country != 'AVERAGE') #remove AVERAGE
 
 write.csv(ghsi_prepped, paste0(prepped, "ghsi.csv"), row.names=F)
 #-------------------------------------------
@@ -49,7 +55,21 @@ cases_prepped = format_jhu(jhu_cases, 'cases')
 deaths_prepped = format_jhu(jhu_deaths, 'deaths')
 
 # ---------------------
-# Manual edits to go here 
+# Manual edits to go here
+cases_prepped$country <- sub("Burma", "Myanmar", cases_prepped$country) #Burma -> Myanmar
+deaths_prepped$country <- sub("Burma", "Myanmar", deaths_prepped$country) #Burma -> Myanmar
+
+cases_prepped$country <- sub("Congo \\(Kinshasa\\)", "Congo (Democratic Republic)", cases_prepped$country) #D.R.C.
+deaths_prepped$country <- sub("Congo \\(Kinshasa\\)", "Congo (Democratic Republic)", deaths_prepped$country) #D.R.C.
+
+cases_prepped$country <- sub("Kyrgyzstan", "Kyrgyz Republic", cases_prepped$country) #Kyrgyz Republic
+deaths_prepped$country <- sub("Kyrgyzstan", "Kyrgyz Republic", deaths_prepped$country) #Kyrgyz Republic
+
+cases_prepped$country <- sub("Korea\\, South", "South Korea", cases_prepped$country) #South Korea
+deaths_prepped$country <- sub("Korea\\, South", "South Korea", deaths_prepped$country) #South Korea
+
+cases_prepped$country <- sub("US", "United States", cases_prepped$country) #United States
+deaths_prepped$country <- sub("US", "United States", deaths_prepped$country) #United States
 
 write.csv(cases_prepped, paste0(prepped, "jhu_cases.csv"), row.names=FALSE)
 write.csv(deaths_prepped, paste0(prepped, "jhu_deaths.csv", row.names=FALSE))
