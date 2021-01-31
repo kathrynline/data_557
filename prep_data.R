@@ -101,11 +101,38 @@ all_data_cumulative = all_data_with_date[date=="2020-12-31"] # We should make su
 
 # Merge on population 
 population = fread(paste0(raw, "world_bank_population.csv"))
-# The population was stored in thousands of people, so multiply by 1,000 
-population[, pop_2019:=pop_2019*1000]
+# The population was stored in thousands of people, so multiply by 1,000
+#population[, pop_2019:=pop_2019*1000] # Not sure if this is accurate, commented out for now.
 
 # -------------------------------------
-# Data cleaning for population here 
+# Data cleaning for population here
+population$country <- sub("St. ", "Saint ", population$country) #mapped St. to Saint
+population$country <- sub("Bahamas\\, The", "Bahamas", population$country)
+population$country <- sub("Brunei Darussalam", "Brunei", population$country)
+population$country <- sub("Congo\\, Dem\\. Rep\\.", "Congo \\(Democratic Republic\\)", population$country)
+population$country <- sub("Congo\\, Rep\\.", "Congo \\(Brazzaville\\)", population$country)
+population$country <- sub("Czech Republic", "Czechia", population$country)
+population$country <- sub("Egypt\\, Arab Rep\\.", "Egypt", population$country)
+population$country <- sub("Gambia\\, The", "Gambia", population$country)
+population$country <- sub("Iran\\, Islamic Rep\\.", "Iran", population$country)
+population$country <- sub("Lao PDR", "Laos", population$country)
+population$country <- sub("Micronesia\\, Fed\\. Sts\\.", "Micronesia", population$country)
+population$country <- sub("Korea\\, Dem\\. People\\’s Rep\\.", "North Korea", population$country)
+population$country <- sub("Russian Federation", "Russia", population$country)
+population$country <- sub("Slovak Republic", "Slovakia", population$country)
+population$country <- sub("Korea\\, Rep\\.", "South Korea", population$country)
+population$country <- sub("Syrian Arab Republic", "Syria", population$country)
+population$country <- sub("Venezuela\\, RB", "Venezuela", population$country)
+population$country <- sub("Yemen\\, Rep\\.", "Yemen", population$country)
+
+#-------------------------------------------------
+# RUN VALIDATION - WILL INFORM MANUAL EDITS ABOVE 
+#-------------------------------------------------
+print(all_data_cumulative$country[!all_data_cumulative$country%in%population$country])
+
+#-------------------------------------------
+# CREATE COMBINED JHU-GHSI DATASET
+#------------------------------------------
 
 all_data_cumulative = merge(all_data_cumulative, population, by='country', all=TRUE)
 
