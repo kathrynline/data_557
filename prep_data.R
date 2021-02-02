@@ -102,7 +102,7 @@ all_data_cumulative = all_data_with_date[date=="2020-12-31"] # We should make su
 # Merge on population 
 population = fread(paste0(raw, "world_bank_population.csv"))
 # The population was stored in thousands of people, so multiply by 1,000
-#population[, pop_2019:=pop_2019*1000] # Not sure if this is accurate, commented out for now.
+population[, pop_2019:=pop_2019*1000] 
 
 # -------------------------------------
 # Data cleaning for population here
