@@ -17,7 +17,7 @@ prepped = "prepped_data/"
 #-------------------------------------------
 # FORMAT GHSI SUMMARY DATA 
 #-------------------------------------------
-ghsi_raw = fread(paste0(raw, "ghsi_summary.csv"))
+ghsi_raw = fread(paste0(raw, "ghsi_summary.csv"), encoding = "UTF-8") #added encoding
 ghsi_prepped = data.table()
 for (i in seq(1, ncol(ghsi_raw), by=2)){
   subset = ghsi_raw[, i:(i+1)]
@@ -30,6 +30,12 @@ for (i in seq(1, ncol(ghsi_raw), by=2)){
 
 #-------------------
 # Manual edits to go here
+ghsi_prepped$country <- sub("St ", "Saint ", ghsi_prepped$country) #mapped St to Saint
+ghsi_prepped$country <- iconv(ghsi_prepped$country, from = 'UTF-8', to = 'ASCII//TRANSLIT') #dropped accents
+ghsi_prepped$country <- sub("Czech Republic", "Czechia", ghsi_prepped$country) #Czechia
+ghsi_prepped$country <- sub("eSwatini \\(Swaziland\\)", "Eswatini", ghsi_prepped$country) #Eswatini
+ghsi_prepped$country <- sub("Saint Vincent and The Grenadines", "Saint Vincent and the Grenadines", ghsi_prepped$country) #St Vincent
+ghsi_prepped <- subset(ghsi_prepped, country != 'AVERAGE') #remove AVERAGE
 
 write.csv(ghsi_prepped, paste0(prepped, "ghsi.csv"), row.names=F)
 #-------------------------------------------
@@ -50,6 +56,21 @@ deaths_prepped = format_jhu(jhu_deaths, 'deaths')
 
 # ---------------------
 # Manual edits to go here 
+
+cases_prepped$country <- sub("Burma", "Myanmar", cases_prepped$country) #Burma -> Myanmar
+deaths_prepped$country <- sub("Burma", "Myanmar", deaths_prepped$country) #Burma -> Myanmar
+
+cases_prepped$country <- sub("Congo \\(Kinshasa\\)", "Congo (Democratic Republic)", cases_prepped$country) #D.R.C
+deaths_prepped$country <- sub("Congo \\(Kinshasa\\)", "Congo (Democratic Republic)", deaths_prepped$country) #D.R.C
+
+cases_prepped$country <- sub("Kyrgyzstan", "Kyrgyz Republic", cases_prepped$country) #Kyrgyz Republic
+deaths_prepped$country <- sub("Kyrgyzstan", "Kyrgyz Republic", deaths_prepped$country) #Kyrgyz Republic
+
+cases_prepped$country <- sub("Korea\\, South", "South Korea", cases_prepped$country) #South Korea
+deaths_prepped$country <- sub("Korea\\, South", "South Korea", deaths_prepped$country) #South Korea
+
+cases_prepped$country <- sub("US", "United States", cases_prepped$country) #United States
+deaths_prepped$country <- sub("US", "United States", deaths_prepped$country) #United States
 
 write.csv(cases_prepped, paste0(prepped, "jhu_cases.csv"), row.names=FALSE)
 write.csv(deaths_prepped, paste0(prepped, "jhu_deaths.csv", row.names=FALSE))
@@ -80,11 +101,38 @@ all_data_cumulative = all_data_with_date[date=="2020-12-31"] # We should make su
 
 # Merge on population 
 population = fread(paste0(raw, "world_bank_population.csv"))
-# The population was stored in thousands of people, so multiply by 1,000 
-population[, pop_2019:=pop_2019*1000]
+# The population was stored in thousands of people, so multiply by 1,000
+population[, pop_2019:=pop_2019*1000] 
 
 # -------------------------------------
-# Data cleaning for population here 
+# Data cleaning for population here
+population$country <- sub("St. ", "Saint ", population$country) #mapped St. to Saint
+population$country <- sub("Bahamas\\, The", "Bahamas", population$country)
+population$country <- sub("Brunei Darussalam", "Brunei", population$country)
+population$country <- sub("Congo\\, Dem\\. Rep\\.", "Congo \\(Democratic Republic\\)", population$country)
+population$country <- sub("Congo\\, Rep\\.", "Congo \\(Brazzaville\\)", population$country)
+population$country <- sub("Czech Republic", "Czechia", population$country)
+population$country <- sub("Egypt\\, Arab Rep\\.", "Egypt", population$country)
+population$country <- sub("Gambia\\, The", "Gambia", population$country)
+population$country <- sub("Iran\\, Islamic Rep\\.", "Iran", population$country)
+population$country <- sub("Lao PDR", "Laos", population$country)
+population$country <- sub("Micronesia\\, Fed\\. Sts\\.", "Micronesia", population$country)
+population$country <- sub("Korea\\, Dem\\. People\\’s Rep\\.", "North Korea", population$country)
+population$country <- sub("Russian Federation", "Russia", population$country)
+population$country <- sub("Slovak Republic", "Slovakia", population$country)
+population$country <- sub("Korea\\, Rep\\.", "South Korea", population$country)
+population$country <- sub("Syrian Arab Republic", "Syria", population$country)
+population$country <- sub("Venezuela\\, RB", "Venezuela", population$country)
+population$country <- sub("Yemen\\, Rep\\.", "Yemen", population$country)
+
+#-------------------------------------------------
+# RUN VALIDATION - WILL INFORM MANUAL EDITS ABOVE 
+#-------------------------------------------------
+print(all_data_cumulative$country[!all_data_cumulative$country%in%population$country])
+
+#-------------------------------------------
+# CREATE COMBINED JHU-GHSI DATASET
+#------------------------------------------
 
 all_data_cumulative = merge(all_data_cumulative, population, by='country', all=TRUE)
 
