@@ -2,4 +2,4 @@
 
 This directory contains the results of appending the country code to each of
 the datasets contained in `raw_data` and omitting all rows without a country
-code.
+code. Use add_country_code.R to generate this data.
