@@ -1,0 +1,146 @@
+---
+title: "Cumulative Indicator Scatterplots"
+date: "1/30/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+``` {r}
+# first-time need to install ggpubr
+# install.packages("ggpubr")
+library('ggpubr')
+# remove 'Inf' and 'NA' Entries
+cumulative_data=na.omit(
+  do.call(data.frame,
+          lapply(read.csv("all_data_cumulative.csv"),
+                 function(x) replace(x, is.infinite(x),NA))))
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='overall',y='cases_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='overall',ylab='cases_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='overall',y='deaths_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='overall',ylab='deaths_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='overall',y='case_fatality_ratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='overall',ylab='case_fatality_ratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='prev_emergence_pathogens',y='cases_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='prev_emergence_pathogens',ylab='cases_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='prev_emergence_pathogens',y='deaths_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='prev_emergence_pathogens',ylab='deaths_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='prev_emergence_pathogens',y='case_fatality_ratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='prev_emergence_pathogens',ylab='case_fatality_ratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='early_detection',y='cases_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='early_detection',ylab='cases_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='early_detection',y='deaths_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='early_detection',ylab='deaths_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='early_detection',y='case_fatality_ratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='early_detection',ylab='case_fatality_ratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='rapid_response',y='cases_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='rapid_response',ylab='cases_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='rapid_response',y='deaths_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='rapid_response',ylab='deaths_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='rapid_response',y='case_fatality_ratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='rapid_response',ylab='case_fatality_ratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='robust_health_sector',y='cases_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='robust_health_sector',ylab='cases_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='robust_health_sector',y='deaths_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='robust_health_sector',ylab='deaths_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='robust_health_sector',y='case_fatality_ratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='robust_health_sector',ylab='case_fatality_ratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='commitments',y='cases_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='commitments',ylab='cases_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='commitments',y='deaths_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='commitments',ylab='deaths_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='commitments',y='case_fatality_ratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='commitments',ylab='case_fatality_ratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='risk_environment',y='cases_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='risk_environment',ylab='cases_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='risk_environment',y='deaths_per_capita',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='risk_environment',ylab='deaths_per_capita')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data,x='risk_environment',y='case_fatality_ratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='risk_environment',ylab='case_fatality_ratio')
+```

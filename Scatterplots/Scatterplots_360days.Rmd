@@ -1,0 +1,221 @@
+---
+title: "Cumulative Indicator Scatterplots: 360-Day After First Case"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
+library(tidyverse)
+library(lubridate)
+
+# reading in files
+
+cases = read.csv("..\\intermediate_data\\jhu_cases_01.26.2021.csv", check.names = FALSE)
+
+deaths = read.csv("..\\intermediate_data\\jhu_deaths_01.26.2021.csv", check.names = FALSE)
+
+population = read.csv("..\\intermediate_data\\world_bank_population.csv", check.names = FALSE)
+
+indicators <- read.csv("..\\intermediate_data\\ghsi_summary.csv", check.names = FALSE)
+
+
+#pivoting dates into rows and grouping by country code and date
+
+cases_country_date <- cases[7:376]
+
+cases_pivot <- pivot_longer(cases_country_date, cols= !contains("country_code"), names_to = "Date", values_to = "Cases")
+
+cases_pivot_grouped <- aggregate(cases_pivot$Cases, by = list(Category = cases_pivot$country_code, cases_pivot$Date), FUN=sum)
+
+deaths_country_date <- deaths[7:376]
+
+deaths_pivot <- pivot_longer(deaths_country_date, cols= !contains("country_code"), names_to = "Date", values_to = "Deaths")
+
+deaths_pivot_grouped <- aggregate(deaths_pivot$Deaths, by = list(Category = deaths_pivot$country_code, deaths_pivot$Date), FUN=sum)
+
+
+#renaming columns
+
+cases_pivot_grouped <- cases_pivot_grouped %>% 
+  rename(
+    country_code = Category,
+    Date = Group.2,
+    Cases = x
+  )
+
+deaths_pivot_grouped <- deaths_pivot_grouped %>% 
+  rename(
+    country_code = Category,
+    Date = Group.2, 
+    Deaths = x
+  )
+
+#merging deaths and cases
+
+deaths_and_cases <- merge(cases_pivot_grouped, deaths_pivot_grouped, by = c("country_code"="country_code", "Date"="Date"))
+
+
+# nonzero cases matrix, 
+
+nonzero_cases <- deaths_and_cases[deaths_and_cases$Cases >0, ]
+
+nonzero_cases$clean_date <- as.Date(str_replace_all(nonzero_cases$Date, "X", ""), "%m.%d.%y")
+
+#sorting by date
+nonzero_cases_sort <- nonzero_cases %>%
+  group_by(country_code) %>%
+  arrange(clean_date) %>%
+  mutate(day_since_first_case=row_number())
+
+
+#merging nonzero cases with population data
+deaths_cases_population <- merge(nonzero_cases_sort, population, by = c("country_code"="country_code"))
+
+#caluclating deaths, cases per capita and case fatality ratio 
+deaths_cases_population$casepc <- (deaths_cases_population$Cases / deaths_cases_population$pop_2019) * 1000
+deaths_cases_population$deathpc <- (deaths_cases_population$Deaths / deaths_cases_population$pop_2019) * 1000
+deaths_cases_population$cfratio <- (deaths_cases_population$Deaths / deaths_cases_population$Cases) * 100
+
+deaths_cases_indicators <- merge(deaths_cases_population, indicators, by =c("country_code"="country_code"))
+
+# returns fileterd dataframe for num_days after first case in country
+# input a dataframe and a number of days after the start of an outbreak
+sum_cases <- function(df, num_days) {
+  return(df[df$day_since_first_case == num_days, ])
+  
+}
+```
+```{r}
+library('ggpubr')
+cumulative_data_360day=sum_cases(deaths_cases_indicators,360)
+```
+#############################################################################################################################################
+```{r}
+ggscatter(cumulative_data_360day,x='overall',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='overall',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='overall',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='overall',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='overall',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='overall',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='prev_emergence_pathogens',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='prev_emergence_pathogens',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='prev_emergence_pathogens',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='prev_emergence_pathogens',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='prev_emergence_pathogens',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='prev_emergence_pathogens',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='early_detection',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='early_detection',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='early_detection',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='early_detection',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='early_detection',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='early_detection',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='rapid_response',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='rapid_response',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='rapid_response',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='rapid_response',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='rapid_response',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='rapid_response',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='robust_health_sector',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='robust_health_sector',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='robust_health_sector',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='robust_health_sector',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='robust_health_sector',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='robust_health_sector',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='commitments',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='commitments',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='commitments',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='commitments',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='commitments',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='commitments',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='risk_environment',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='risk_environment',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='risk_environment',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='risk_environment',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_360day,x='risk_environment',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='risk_environment',ylab='cfratio')
+```
