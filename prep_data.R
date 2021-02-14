@@ -91,6 +91,8 @@ all_data_with_date = merge(all_jhu, ghsi_prepped, by=c('country_code'), all=TRUE
 
 write.csv(all_data_with_date, paste0(prepped, "all_data_with_date.csv"))
 
+# TODO: merge in islands data, and add a boolean that says 
+# whether a country is an island
 #--------------------------------------------
 # CREATE CUMULATIVE DATASET
 #--------------------------------------------

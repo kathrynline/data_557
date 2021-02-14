@@ -3,8 +3,6 @@
 add_country_codes <- function(file_name, column_name){
   # Relative path for the file to transform. The file must have a "country" column
   originalFilePath <- paste0('./raw_data/', file_name)
-  # Name for the country column in the source file
-  originalFileCountryColumn <- column_name
   
   # Relative path the the resulting file with country code added
   outputFilePath <- paste0('./intermediate_data/', file_name)
@@ -20,7 +18,7 @@ add_country_codes <- function(file_name, column_name){
   codes$country_code <- trimws(codes$Alpha.3.code, which = c("left"))
   
   # Rename country column for easier access
-  names(original)[names(original) == originalFileCountryColumn] <- 'country'
+  names(original)[names(original) == country_column] <- 'country'
   
   # Join the two tables on the country column
   output <-
