@@ -91,8 +91,6 @@ all_data_with_date = merge(all_jhu, ghsi_prepped, by=c('country_code'), all=TRUE
 
 write.csv(all_data_with_date, paste0(prepped, "all_data_with_date.csv"))
 
-# TODO: merge in islands data, and add a boolean that says 
-# whether a country is an island
 #--------------------------------------------
 # CREATE CUMULATIVE DATASET
 #--------------------------------------------
@@ -103,7 +101,10 @@ all_data_cumulative = all_data_with_date[date=="2020-12-31"] # We should make su
 # Merge on population 
 population = fread(paste0(intermediate, "world_bank_population.csv"))
 # The population was stored in thousands of people, so multiply by 1,000
-population[, pop_2019:=pop_2019*1000] 
+population[, pop_2019:=pop_2019*1000]
+
+# Merge on status as an island nation
+island=fread(paste0(intermediate, "island_countries.csv"))
 
 # -------------------------------------
 # Data cleaning for population here
@@ -138,8 +139,10 @@ print(all_data_cumulative$country[!all_data_cumulative$country%in%population$cou
 # CREATE COMBINED JHU-GHSI DATASET
 #------------------------------------------
 
-all_data_cumulative = merge(all_data_cumulative, population, by='country_code', all=TRUE)
+all_data_cumulative = merge(all_data_cumulative, population, by='country_code', all.x=TRUE, all.y=FALSE)
 stopifnot(nrow(all_data_cumulative[is.na('country_code')])==0)
+
+all_data_cumulative$is_island = all_data_cumulative$country_code %in% island$country_code
 
 all_data_cumulative[, cases_per_capita:=cases/pop_2019]
 all_data_cumulative[, deaths_per_capita:=deaths/pop_2019]
