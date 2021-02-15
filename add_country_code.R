@@ -18,7 +18,7 @@ add_country_codes <- function(file_name, column_name){
   codes$country_code <- trimws(codes$Alpha.3.code, which = c("left"))
   
   # Rename country column for easier access
-  names(original)[names(original) == column_name] <- 'country'
+  names(original)[names(original) == country_column] <- 'country'
   
   # Join the two tables on the country column
   output <-
@@ -46,5 +46,7 @@ add_country_codes('island_countries.csv', "country")
 add_country_codes('jhu_cases_01.26.2021.csv', 'Country.Region')
 add_country_codes('jhu_deaths_01.26.2021.csv', 'Country.Region')
 add_country_codes('world_bank_population.csv', 'country')
+add_country_codes('democracy_index.csv', 'Country')
+add_country_codes('ghsi_raw.csv', 'Country')
 
 print("Add country codes step complete.")
