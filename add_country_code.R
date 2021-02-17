@@ -18,7 +18,7 @@ add_country_codes <- function(file_name, column_name){
   codes$country_code <- trimws(codes$Alpha.3.code, which = c("left"))
   
   # Rename country column for easier access
-  names(original)[names(original) == country_name] <- 'country'
+  names(original)[names(original) == column_name] <- 'country'
   
   # Join the two tables on the country column
   output <-
