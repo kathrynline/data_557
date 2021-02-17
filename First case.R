@@ -1,29 +1,19 @@
 library(tidyverse)
 library(lubridate)
 
-#Calculates start date for each country
-
-#col_num <- apply(cases[,5:ncol(cases)], 1, function(x){first_case = min(which(x>0))})
-
-#first_case <- names(cases[,5:ncol(cases)])[col_num]
-
-#cases <- cbind(first_case, cases)
-
 
 # reading in files
 
-cases = read.csv("./intermediate_data/jhu_cases_01.26.2021.csv", check.names = FALSE)
+cases = read.csv(".\\intermediate_data\\jhu_cases_01.26.2021.csv", check.names = FALSE)
 
-deaths = read.csv("./intermediate_data/jhu_deaths_01.26.2021.csv", check.names = FALSE)
+deaths = read.csv(".\\intermediate_data\\jhu_deaths_01.26.2021.csv", check.names = FALSE)
 
-population = read.csv("./intermediate_data/world_bank_population.csv", check.names = FALSE)
+population = read.csv(".\\intermediate_data\\world_bank_population.csv", check.names = FALSE)
 
-indicators <- read.csv("./intermediate_data/ghsi_summary.csv", check.names = FALSE)
+indicators <- read.csv(".\\intermediate_data\\ghsi_summary.csv", check.names = FALSE)
 
 
 #pivoting dates into rows and grouping by country code and date
-
-
 
 cases_country_date <- cases[7:ncol(cases)]
 
@@ -73,16 +63,22 @@ nonzero_cases_sort <- nonzero_cases %>%
 
 
 #merging nonzero cases with population data
-deaths_cases_population <- merge(nonzero_cases_sort, population, by = c("country_code"="country_code"))
+deaths_cases_population <- merge(nonzero_cases_sort, population, by = c("country_code"="country_code"), all.x = TRUE)
 
-#caluclating deaths, cases per capita and case fatality ratio 
+#calculating deaths, cases per capita and case fatality ratio 
 deaths_cases_population$casepc <- (deaths_cases_population$Cases / deaths_cases_population$pop_2019) * 1000
 deaths_cases_population$deathpc <- (deaths_cases_population$Deaths / deaths_cases_population$pop_2019) * 1000
 deaths_cases_population$cfratio <- (deaths_cases_population$Deaths / deaths_cases_population$Cases) * 100
 
 deaths_cases_indicators <- merge(deaths_cases_population, indicators, by =c("country_code"="country_code"), all =TRUE)
 
-# returns fileterd dataframe for num_days after first case in country
+# Cleaning up columns
+
+deaths_cases_indicators <- deaths_cases_indicators %>% select(country_code, Cases, Deaths, clean_date, day_since_first_case, 
+                                   pop_2019, casepc, deathpc, cfratio, overall, prev_emergence_pathogens, early_detection,
+                                   rapid_response, robust_health_sector, commitments, risk_environment)
+
+# returns filtered dataframe for num_days after first case in country
 # input a dataframe and a number of days after the start of an outbreak
 sum_cases <- function(df, num_days) {
   return(df[df$day_since_first_case == num_days, ])
@@ -90,5 +86,12 @@ sum_cases <- function(df, num_days) {
 }
 
 
+one_month <- sum_cases(deaths_cases_indicators, 30)
+two_month <- sum_cases(deaths_cases_indicators, 60)
+six_month <- sum_cases(deaths_cases_indicators, 180)
+
+write.csv(one_month,".\\prepped_data\\onemonth.csv", row.names = FALSE)
+write.csv(two_month,".\\prepped_data\\twomonth.csv", row.names = FALSE)
+write.csv(six_month,".\\prepped_data\\sixmonth.csv", row.names = FALSE)
 
 
