@@ -6,7 +6,9 @@ stopifnot(grepl("data_557", getwd()))
 # First take the "raw" data, add country code, and save to "intermediates" folder. 
 source('add_country_code.R')
 
+# Calculate the number of cases per country after one month, two months, six months 
 source('First case.R')
 
 # Then, take this intermediates data, clean and merge it, and save to "prepped" folder. 
 source('prep_data.R')
+
