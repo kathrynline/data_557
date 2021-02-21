@@ -1,0 +1,16 @@
+---
+title: "island_confounding"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analysis of island status as a confounding variable
+
+TODO: implement analysis
