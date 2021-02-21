@@ -73,7 +73,7 @@ cases_prepped = cases_prepped[, .(cases=sum(cases)), by=c('country_code', 'date'
 deaths_prepped = deaths_prepped[, .(deaths=sum(deaths)), by=c('country_code', 'date')]
 
 write.csv(cases_prepped, paste0(prepped, "jhu_cases.csv"), row.names=FALSE)
-write.csv(deaths_prepped, paste0(prepped, "jhu_deaths.csv"), row.names=FALSE)
+write.csv(deaths_prepped, paste0(prepped, "jhu_deaths.csv", row.names=FALSE))
 
 all_jhu = merge(cases_prepped, deaths_prepped, by=c('country_code', 'date'), all=TRUE)
 write.csv(all_jhu, paste0(prepped, "all_jhu.csv"))
