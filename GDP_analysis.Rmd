@@ -1,0 +1,95 @@
+---
+title: "GDP_Analysis"
+author: "Edward Lou"
+date: "2/21/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+```{r}
+# import libraries
+library(tidyverse)
+library(lubridate)
+library(ggpubr)
+library(dplyr)
+
+# load sixmonth data, omitting NA values
+sixmonth_data = na.omit(read.csv(".\\prepped_data\\sixmonth.csv", check.names = FALSE))
+
+# add gdp_pc quartile
+sixmonth_data$gdp_pc_quartile <- ntile(sixmonth_data$gdp_pc, 4)
+```
+\newpage
+```{r}
+# check correlation between gdp_pc and overall GHSI index
+ggscatter(sixmonth_data,x='gdp_pc' ,y='overall',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='GDP per-capita',ylab='Overall GHSI Score')
+```
+\newpage
+```{r}
+# cases per-capita vs overall GHSI
+summary(lm(casepc ~ overall, data = sixmonth_data))$coefficients
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(lm(casepc ~ overall, data = sixmonth_data))
+```
+\newpage
+```{r}
+# deaths per-capita vs overall GHSI
+summary(lm(deathpc ~ overall, data = sixmonth_data))$coefficients
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(lm(deathpc ~ overall, data = sixmonth_data))
+```
+\newpage
+```{r}
+# case-fatality ratio vs overall GHSI
+summary(lm(cfratio ~ overall, data = sixmonth_data))$coefficients
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(lm(cfratio ~ overall, data = sixmonth_data))
+```
+\newpage
+```{r}
+# cases per-capita vs overall GHSI confounding on GDP per-capita quartiles
+summary(lm(casepc ~ overall + factor(gdp_pc_quartile), data = sixmonth_data))$coefficients
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(lm(casepc ~ overall + factor(gdp_pc_quartile), data = sixmonth_data))
+```
+\newpage
+```{r}
+# deaths per-capita vs overall GHSI confounding on GDP per-capita quartiles
+summary(lm(deathpc ~ overall + factor(gdp_pc_quartile), data = sixmonth_data))$coefficients
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(lm(deathpc ~ overall + factor(gdp_pc_quartile), data = sixmonth_data))
+```
+\newpage
+```{r}
+# case-fatality ratio vs overall GHSI confounding on GDP per-capita quartiles
+summary(lm(cfratio ~ overall + factor(gdp_pc_quartile), data = sixmonth_data))$coefficients
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(lm(cfratio ~ overall + factor(gdp_pc_quartile), data = sixmonth_data))
+```
+\newpage
+```{r}
+# cases per-capita vs overall GHSI confounding on GDP per-capita
+summary(lm(casepc ~ overall + gdp_pc_quartile, data = sixmonth_data))$coefficients
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(lm(casepc ~ overall + gdp_pc_quartile, data = sixmonth_data))
+```
+\newpage
+```{r}
+# deaths per-capita vs overall GHSI confounding on GDP per-capita
+summary(lm(deathpc ~ overall + gdp_pc_quartile, data = sixmonth_data))$coefficients
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(lm(deathpc ~ overall + gdp_pc_quartile, data = sixmonth_data))
+```
+\newpage
+```{r}
+# case-fatality ratio per-capita vs overall GHSI confounding on GDP per-capita
+summary(lm(cfratio ~ overall + gdp_pc_quartile, data = sixmonth_data))$coefficients
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(lm(cfratio ~ overall + gdp_pc_quartile, data = sixmonth_data))
+
+```

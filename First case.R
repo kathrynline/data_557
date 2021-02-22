@@ -14,6 +14,8 @@ indicators <- read.csv(".\\intermediate_data\\ghsi_summary.csv", check.names = F
 
 islands <- read.csv(".\\intermediate_data\\island_countries.csv", check.names = FALSE)
 
+gdp <- read.csv(".\\intermediate_data\\world_bank_gdp.csv", check.names = FALSE)
+
 
 #pivoting dates into rows and grouping by country code and date
 
@@ -72,13 +74,16 @@ deaths_cases_population$casepc <- (deaths_cases_population$Cases / deaths_cases_
 deaths_cases_population$deathpc <- (deaths_cases_population$Deaths / deaths_cases_population$pop_2019) * 1000
 deaths_cases_population$cfratio <- (deaths_cases_population$Deaths / deaths_cases_population$Cases) * 100
 
-deaths_cases_indicators <- merge(deaths_cases_population, indicators, by =c("country_code"="country_code"), all =TRUE)
+# Add gdp per capita
+deaths_cases_population_gdp <- merge(deaths_cases_population, gdp, by = c("country_code"="country_code"), all = TRUE)
+
+deaths_cases_indicators <- merge(deaths_cases_population_gdp, indicators, by =c("country_code"="country_code"), all =TRUE)
 
 # Cleaning up columns
 
 deaths_cases_indicators <- deaths_cases_indicators %>% select(country_code, Cases, Deaths, clean_date, day_since_first_case, 
                                    pop_2019, casepc, deathpc, cfratio, overall, prev_emergence_pathogens, early_detection,
-                                   rapid_response, robust_health_sector, commitments, risk_environment)
+                                   rapid_response, robust_health_sector, commitments, risk_environment, gdp_pc)
 
 # Add the island indicator
 
