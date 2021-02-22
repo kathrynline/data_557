@@ -100,9 +100,11 @@ sum_cases <- function(df, num_days) {
 one_month <- sum_cases(deaths_cases_indicators, 30)
 two_month <- sum_cases(deaths_cases_indicators, 60)
 six_month <- sum_cases(deaths_cases_indicators, 180)
+twelve_month <- sum_cases(deaths_cases_indicators, 360)
 
 write.csv(one_month,".\\prepped_data\\onemonth.csv", row.names = FALSE)
 write.csv(two_month,".\\prepped_data\\twomonth.csv", row.names = FALSE)
 write.csv(six_month,".\\prepped_data\\sixmonth.csv", row.names = FALSE)
+write.csv(twelve_month,".\\prepped_data\\twelvemonth.csv", row.names = FALSE)
 
 
