@@ -75,8 +75,8 @@ deaths_cases_indicators <- merge(deaths_cases_population, indicators, by =c("cou
 # Cleaning up columns
 
 deaths_cases_indicators <- deaths_cases_indicators %>% select(country_code, Cases, Deaths, clean_date, day_since_first_case, 
-                                   pop_2019, casepc, deathpc, cfratio, overall, prev_emergence_pathogens, early_detection,
-                                   rapid_response, robust_health_sector, commitments, risk_environment)
+                                                              pop_2019, casepc, deathpc, cfratio, overall, prev_emergence_pathogens, early_detection,
+                                                              rapid_response, robust_health_sector, commitments, risk_environment)
 
 # returns filtered dataframe for num_days after first case in country
 # input a dataframe and a number of days after the start of an outbreak
