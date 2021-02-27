@@ -9,7 +9,9 @@ output: pdf_document
 knitr::opts_chunk$set(echo = FALSE)
 library(data.table)
 
-dt = fread("C:/Users/eklin/Documents/repos/data_557/prepped_data/sixmonth.csv")
+# Set working directory to the root of the repository 
+stopifnot(grepl("data_557", getwd()))
+dt = fread("prepped_data/sixmonth.csv")
 
 # Drop NAs in overall score and/or cfratio - this should happen earlier in the prep step. 
 dt = dt[!(is.na(overall) | is.na(cfratio))]
