@@ -1,0 +1,37 @@
+---
+title: "Outlier Screening"
+author: "Emily Linebarger"
+date: "2/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(data.table)
+
+# Set working directory to root of repository 
+stopifnot(grepl("data_557", getwd()))
+dt = fread("prepped_data/sixmonth.csv")
+```
+
+Run first regression, of just cases-per-capita to overall score. 
+```{r reg1} 
+summary(lm(casepc ~ overall, data=dt))
+plot(lm(casepc ~ overall, data=dt))
+```
+
+Do a little bit of outlier screening, and then rerun regression. 
+```{r outlier_screening} 
+range = IQR(dt$casepc, na.rm=TRUE)
+mean = mean(dt$casepc, na.rm=TRUE)
+subset1 = dt[casepc<mean-range | casepc>mean+range]
+
+dt = dt[!country_code %in% subset1$country_code]
+
+```
+
+
+```{r reg2}
+summary(lm(casepc ~ overall, data=dt))
+plot(lm(casepc ~ overall, data=dt))
+```

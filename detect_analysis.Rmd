@@ -1,0 +1,133 @@
+---
+title: "Reporting systems sub-analysis"
+author: "Emily Linebarger"
+date: "2/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(data.table)
+
+# Set working directory to the root of the repository 
+stopifnot(grepl("data_557", getwd()))
+dt = fread("prepped_data/sixmonth.csv")
+
+# Drop NAs in overall score and/or cfratio - this should happen earlier in the prep step. 
+dt = dt[!(is.na(overall) | is.na(cfratio))]
+```
+
+First, run a simple scatter to see what the correlation between the overall score and the "early detection" sub-component looks like. 
+```{r exploratory_analysis}
+plot(dt$overall, dt$early_detection, main="Correlation check", xlab="Overall score", ylab="Early detection sub-component score")
+```
+
+
+Ouch they are really highly correlated. 
+Also check the inverse coefficient matrix. 
+
+```{r coef_matrix} 
+n = nrow(dt)
+X = cbind(rep(1, n), dt$overall, dt$early_detection)
+inv_matrix = solve(t(X) %*% X)
+print(inv_matrix)
+```
+
+The off-diagonals for "overall" and "early_detection" are not zero, which tells us they are not independent. 
+
+# Outlier screening, with more lenient screen
+
+```{r outlier_screening} 
+range = IQR(dt$casepc, na.rm=TRUE)
+mean = mean(dt$casepc, na.rm=TRUE)
+subset1 = dt[casepc<mean-range | casepc>mean+range]
+
+range = IQR(dt$deathpc, na.rm=TRUE)
+mean = mean(dt$deathpc, na.rm=TRUE)
+subset2 = dt[deathpc<mean-range | deathpc>mean+range]
+
+range = IQR(dt$cfratio, na.rm=TRUE)
+mean = mean(dt$cfratio, na.rm=TRUE)
+subset3 = dt[cfratio<mean-range | cfratio>mean+range]
+
+# You would expect to get very different outliers when comparing count variables to the ratio of cases/deaths. 
+all_count_outliers = intersect(subset1$country_code, subset2$country_code)
+all_outliers = intersect(all_count_outliers, subset3$country_code)
+
+# More lenient screening
+regression_data = dt[!country_code %in% all_outliers]
+```
+
+## Cases per-capita  
+
+```{r reg1}
+summary(lm(casepc ~ overall + early_detection, data=regression_data))
+plot(lm(casepc ~ overall + early_detection, data=regression_data))
+```
+
+## Deaths per-capita 
+
+```{r reg2}
+summary(lm(deathpc ~ overall + early_detection, data=regression_data))
+plot(lm(deathpc ~ overall + early_detection, data=regression_data))
+```
+
+## Case-fatality ratio
+```{r reg3}
+summary(lm(cfratio ~ overall + early_detection, data=regression_data))
+plot(lm(cfratio ~ overall + early_detection, data=regression_data))
+```
+
+# More strict outlier screening 
+
+## Cases per-capita  
+
+```{r reg1.1}
+regression_data = dt[!country_code %in% subset1$country_code]
+summary(lm(casepc ~ overall + early_detection, data=regression_data))
+plot(lm(casepc ~ overall + early_detection, data=regression_data))
+```
+
+## Deaths per-capita 
+
+```{r reg2.1}
+regression_data = dt[!country_code %in% subset2$country_code]
+summary(lm(deathpc ~ overall + early_detection, data=regression_data))
+plot(lm(deathpc ~ overall + early_detection, data=regression_data))
+```
+
+## Case-fatality ratio
+```{r reg3.1}
+regression_data = dt[!country_code %in% subset3$country_code]
+summary(lm(cfratio ~ overall + early_detection, data=regression_data))
+plot(lm(cfratio ~ overall + early_detection, data=regression_data))
+```
+
+# One more attempt, just dropping any locations where deaths = 0 (N=14)
+
+## Cases per capita
+```{r reg1.2}
+regression_data = dt[Deaths>0]
+summary(lm(casepc ~ overall + early_detection, data=regression_data))
+plot(lm(casepc ~ overall + early_detection, data=regression_data))
+```
+
+## Deaths per-capita 
+
+```{r reg2.2}
+summary(lm(deathpc ~ overall + early_detection, data=regression_data))
+plot(lm(deathpc ~ overall + early_detection, data=regression_data))
+```
+
+## Case-fatality ratio
+```{r reg3.2}
+summary(lm(cfratio ~ overall + early_detection, data=regression_data))
+plot(lm(cfratio ~ overall + early_detection, data=regression_data))
+```
+
+# Final takeaways 
+1. These predictor variables might be too correlated to have meaningful results. However, it is worrying that the outcome of cases-per-capita correlates so highly with (theoretically) good-quality reporting. Is this just an issue of undercounting? 
+
+Note that there is a large jump in the adjusted R-squared from using just overall as a predictor variable (0.01832) to overall + early_detection (0.1756). 
+
+We need to discuss outlier screening more. 
