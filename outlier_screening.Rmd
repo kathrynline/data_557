@@ -9,7 +9,9 @@ output: pdf_document
 knitr::opts_chunk$set(echo = FALSE)
 library(data.table)
 
-dt = fread("C:/Users/eklin/Documents/repos/data_557/prepped_data/sixmonth.csv")
+# Set working directory to root of repository 
+stopifnot(grepl("data_557", getwd()))
+dt = fread("prepped_data/sixmonth.csv")
 ```
 
 Run first regression, of just cases-per-capita to overall score. 

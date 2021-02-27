@@ -2,6 +2,8 @@
 
 library(data.table) 
 
+# Set working directory to the root of the repository
+stopifnot(grepl("data_557", getwd()))
 dt = fread("C:/Users/eklin/Documents/repos/data_557/prepped_data/ghsi.csv")
 
 # Pull in expert panel weights from report. 
