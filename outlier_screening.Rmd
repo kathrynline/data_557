@@ -2,7 +2,7 @@
 title: "Outlier Screening"
 author: "Emily Linebarger"
 date: "2/17/2021"
-output: pdf_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
