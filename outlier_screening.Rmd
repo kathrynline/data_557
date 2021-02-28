@@ -8,6 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(data.table)
+library(knitr)
 
 # Set working directory to root of repository 
 stopifnot(grepl("data_557", getwd()))
@@ -16,22 +17,71 @@ dt = fread("prepped_data/sixmonth.csv")
 
 Run first regression, of just cases-per-capita to overall score. 
 ```{r reg1} 
-summary(lm(casepc ~ overall, data=dt))
-plot(lm(casepc ~ overall, data=dt))
+summary(lm(cfratio ~ overall, data=dt))
+plot(lm(cfratio ~ overall, data=dt))
 ```
 
-Do a little bit of outlier screening, and then rerun regression. 
-```{r outlier_screening} 
-range = IQR(dt$casepc, na.rm=TRUE)
-mean = mean(dt$casepc, na.rm=TRUE)
-subset1 = dt[casepc<mean-range | casepc>mean+range]
+```{r hist} 
+hist(dt$cfratio)
+```
 
-dt = dt[!country_code %in% subset1$country_code]
+There seems to be constant variance in plots 1 and 3. However, we have an issue with non-normality in our qq-plot. 
+Examining this further with a histogram, we can see two issues: a large cluster of zeros, and a few high outliers with a case fatality ratio higher than 25. 
+
+```{r boxplot} 
+boxplot(dt$cfratio)
+summary(dt$cfratio)
+upper_whisker = 3.327 + ((3.327-1.080) * 1.5)
+```
+
+## Review upper values 
+The upper whisker extends 1.5 times past the interquartile range, to `r upper_whisker`. 
+The values that lie beyond that are: 
+```{r upper_outliers} 
+high_cfratio = dt[cfratio>upper_whisker, .(country_code, Cases, Deaths, casepc, deathpc, cfratio)]
+kable(high_cfratio[order(cfratio)])
+hist(high_cfratio$cfratio)
+```
+
+Although these do represent high fatality ratios, many of them represent reasonable values. For example, the second-highest, Italy, had one of the worst early waves in the pandemic and this fatality ratio is very likely six months after they started recording cases/deaths. 
+
+The only value that I would treat like an outlier here is Yemen, which has a case-fatality ratio of 28.9. It looks highly likely that Yemen has undercounted cases in these reported numbers, because over 1 in 4 people have died after catching COVID-19 in their reported numbers (593 out of 2047). Because of this, we will drop this data point from our analysis. 
+
+```{r final_dataset} 
+# Generate final 6-month dataset that accounts for outlier screening 
+outlier_screened = copy(dt)
+outlier_screened = outlier_screened[!is.na(cfratio)]
+
+# Remove Yemen, because nearly over 1 in 4 people with COVID-19 have died (in reported numbers). 
+outlier_screened = outlier_screened[country_code!="YEM"]
 
 ```
 
+## Review zeros/very low values 
 
-```{r reg2}
-summary(lm(casepc ~ overall, data=dt))
-plot(lm(casepc ~ overall, data=dt))
+```{r boxplot2} 
+hist(outlier_screened$cfratio)
+boxplot(outlier_screened$cfratio)
 ```
+There are also a large cluster of countries with values clustered at zero (N=`r outlier_screened[cfratio==0, .N]`), which would signify zero deaths. Review these to make sure these values are believable. 
+```{r low_values} 
+kable(outlier_screened[cfratio==0, .(country_code, Cases, Deaths, deathpc, casepc, pop_2019, clean_date, cfratio)])
+```
+
+There are a few NA values here where population was not available. We will remove these from our analysis. However, for the rest of the values, they all have very low reported case numbers and may have truly recorded zero deaths. Without more substantial evidence to signify a reporting failure, we will leave these zeros in for now. 
+
+```{r outlier_screening2} 
+outlier_screened = outlier_screened[!(is.na(pop_2019) | is.na(casepc) | is.na(deathpc))] # Drop anything that would cause your data to be calculated incorrectly. 
+write.csv(outlier_screened, "prepped_data/six_month_outlier_screened.csv", row.names=F)
+```
+
+# Finally, run initial analysis again and see if non-normality problem persists. 
+```{r final_check} 
+hist(outlier_screened$cfratio)
+boxplot(outlier_screened$cfratio)
+plot(lm(cfratio ~ overall, data=outlier_screened))
+```
+
+After this cleaning, we do see some evidence of non-constant variance, and our non-normality problem persists. We will need to turn to data transformations to address these issues. 
+
+The outlier screening process has taken our total sample size from N=`r nrow(dt)` to N=`r nrow(outlier_screened)`. 
