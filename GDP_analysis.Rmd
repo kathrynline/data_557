@@ -90,24 +90,24 @@ plot(lm(cfratio ~ overall + factor(gdp_pc_quartile), data = sixmonth_data))
 
 ## Cases per-capita vs overall GHSI & GDP per-capita
 ```{r}
-summary(lm(casepc ~ overall + gdp_pc_quartile, data = sixmonth_data))$coefficients
+summary(lm(casepc ~ overall + gdp_pc, data = sixmonth_data))$coefficients
 par(mfrow=c(2,2),mar=c(5,4,2,1))
-plot(lm(casepc ~ overall + gdp_pc_quartile, data = sixmonth_data))
+plot(lm(casepc ~ overall + gdp_pc, data = sixmonth_data))
 ```
 \newpage
 
 ## Deaths per-capita vs overall GHSI & GDP per-capita
 ```{r}
-summary(lm(deathpc ~ overall + gdp_pc_quartile, data = sixmonth_data))$coefficients
+summary(lm(deathpc ~ overall + gdp_pc, data = sixmonth_data))$coefficients
 par(mfrow=c(2,2),mar=c(5,4,2,1))
-plot(lm(deathpc ~ overall + gdp_pc_quartile, data = sixmonth_data))
+plot(lm(deathpc ~ overall + gdp_pc, data = sixmonth_data))
 ```
 \newpage
 
 ## Case-fatality ratio vs overall GHSI & GDP per-capita
 ```{r}
-summary(lm(cfratio ~ overall + gdp_pc_quartile, data = sixmonth_data))$coefficients
+summary(lm(cfratio ~ overall + gdp_pc, data = sixmonth_data))$coefficients
 par(mfrow=c(2,2),mar=c(5,4,2,1))
-plot(lm(cfratio ~ overall + gdp_pc_quartile, data = sixmonth_data))
+plot(lm(cfratio ~ overall + gdp_pc, data = sixmonth_data))
 
 ```
