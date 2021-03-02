@@ -1,0 +1,140 @@
+---
+title: "Cumulative Indicator Scatterplots: 180-Day After First Case"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+```{r}
+library(tidyverse)
+library(lubridate)
+library('ggpubr')
+cumulative_data_180day=na.omit(read.csv("..\\prepped_data\\sixmonth.csv", check.names = FALSE))
+```
+#############################################################################################################################################
+```{r}
+ggscatter(cumulative_data_180day,x='overall',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='overall',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='overall',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='overall',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='overall',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='overall',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='prev_emergence_pathogens',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='prev_emergence_pathogens',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='prev_emergence_pathogens',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='prev_emergence_pathogens',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='prev_emergence_pathogens',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='prev_emergence_pathogens',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='early_detection',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='early_detection',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='early_detection',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='early_detection',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='early_detection',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='early_detection',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='rapid_response',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='rapid_response',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='rapid_response',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='rapid_response',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='rapid_response',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='rapid_response',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='robust_health_sector',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='robust_health_sector',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='robust_health_sector',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='robust_health_sector',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='robust_health_sector',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='robust_health_sector',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='commitments',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='commitments',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='commitments',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='commitments',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='commitments',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='commitments',ylab='cfratio')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='risk_environment',y='casepc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='risk_environment',ylab='casepc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='risk_environment',y='deathpc',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='risk_environment',ylab='deathpc')
+```
+\newpage
+```{r}
+ggscatter(cumulative_data_180day,x='risk_environment',y='cfratio',
+          add='reg.line',cor.coef=TRUE,cor.method='pearson',
+          xlab='risk_environment',ylab='cfratio')
+```
