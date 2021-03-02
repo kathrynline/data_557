@@ -16,6 +16,8 @@ islands <- read.csv(".\\intermediate_data\\island_countries.csv", check.names = 
 
 gdp <- read.csv(".\\intermediate_data\\world_bank_gdp.csv", check.names = FALSE)
 
+democracy <- read.csv(".\\intermediate_data\\democracy_index.csv", check.names = FALSE)
+
 
 #pivoting dates into rows and grouping by country code and date
 
@@ -77,17 +79,23 @@ deaths_cases_population$cfratio <- (deaths_cases_population$Deaths / deaths_case
 # Add gdp per capita
 deaths_cases_population_gdp <- merge(deaths_cases_population, gdp, by = c("country_code"="country_code"), all = TRUE)
 
-deaths_cases_indicators <- merge(deaths_cases_population_gdp, indicators, by =c("country_code"="country_code"), all =TRUE)
+#deaths_cases_indicators <- merge(deaths_cases_population_gdp, indicators, by =c("country_code"="country_code"), all =TRUE)
+
+# Add democracy data
+
+deaths_cases_indicators_democracy <- merge(deaths_cases_population_gdp, democracy, by = c("country_code"="country_code"), all = TRUE)
+
+deaths_cases_indicators <- merge(deaths_cases_indicators_democracy, indicators, by =c("country_code"="country_code"), all =TRUE)
 
 # Cleaning up columns
 
 deaths_cases_indicators <- deaths_cases_indicators %>% select(country_code, Cases, Deaths, clean_date, day_since_first_case, 
                                    pop_2019, casepc, deathpc, cfratio, overall, prev_emergence_pathogens, early_detection,
-                                   rapid_response, robust_health_sector, commitments, risk_environment, gdp_pc)
+                                   rapid_response, robust_health_sector, commitments, risk_environment, gdp_pc, X2019)
 
 # Add the island indicator
 
-deaths_cases_indicators$is_island = deaths_cases_indicators$country_code %in% island$country_code
+deaths_cases_indicators$is_island = deaths_cases_indicators$country_code %in% islands$country_code
 
 # returns filtered dataframe for num_days after first case in country
 # input a dataframe and a number of days after the start of an outbreak
