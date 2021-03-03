@@ -18,6 +18,74 @@ current.x = data.frame(current.prevent, current.detect, current.rapid, current.h
 
 ################################
 
+#Cases per capita multilinear regression
+cases.multi = lm(casepc ~ prev_emergence_pathogens + early_detection + rapid_response + robust_health_sector 
+                  + commitments + risk_environment, data = sixmonth)
+summary(cases.multi)$coef
+summary(cases.multi)$r.squared
+
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(cases.multi)
+
+####
+
+cases.intercept = summary(cases.multi)$coef[1,1]
+cases.prevent = summary(cases.multi)$coef[2,1]
+cases.detect = summary(cases.multi)$coef[3,1]
+cases.rapid = summary(cases.multi)$coef[4,1]
+cases.hs = summary(cases.multi)$coef[5,1]
+cases.compliance = summary(cases.multi)$coef[6,1]
+cases.risk = summary(cases.multi)$coef[7,1]
+
+cases.coefs = data.frame(cases.intercept, cases.prevent, cases.detect, cases.rapid, cases.hs, cases.compliance, cases.risk)
+
+#cases.x = sixmonth$casepc
+#cases.x = rescale(cases.x, to = c(0,100)) #normalize??? need to check this
+#cases.x = format(cases.x, scientific = F) #get rid of scientific notation
+
+cases.overall = cases.intercept + current.prevent*cases.prevent + current.detect*cases.detect + current.rapid*cases.rapid + 
+  current.hs*cases.hs + current.compliance*cases.compliance + current.risk*cases.risk
+
+cases.overall = rescale(cases.overall, to = c(100,0))
+
+par(mfrow=c(1,1))
+plot(sixmonth$casepc ~ cases.overall)
+abline(lm(sixmonth$casepc ~ cases.overall))
+summary(lm(sixmonth$casepc ~ cases.overall))
+
+################################
+
+#Deaths per capita multilinear regression
+deaths.multi = lm(deathpc ~ prev_emergence_pathogens + early_detection + rapid_response + robust_health_sector 
+                 + commitments + risk_environment, data = sixmonth)
+summary(deaths.multi)$coef
+summary(deaths.multi)$r.squared
+
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+plot(deaths.multi)
+
+####
+
+deaths.intercept = summary(deaths.multi)$coef[1,1]
+deaths.prevent = summary(deaths.multi)$coef[2,1]
+deaths.detect = summary(deaths.multi)$coef[3,1]
+deaths.rapid = summary(deaths.multi)$coef[4,1]
+deaths.hs = summary(deaths.multi)$coef[5,1]
+deaths.compliance = summary(deaths.multi)$coef[6,1]
+deaths.risk = summary(deaths.multi)$coef[7,1]
+
+deaths.coefs = data.frame(deaths.intercept, deaths.prevent, deaths.detect, deaths.rapid, deaths.hs, deaths.compliance, deaths.risk)
+
+deaths.overall = deaths.intercept + current.prevent*deaths.prevent + current.detect*deaths.detect + current.rapid*deaths.rapid + 
+  current.hs*deaths.hs + current.compliance*deaths.compliance + current.risk*deaths.risk
+
+par(mfrow=c(1,1))
+plot(sixmonth$deathpc ~ deaths.overall)
+abline(lm(sixmonth$deathpc ~ deaths.overall))
+summary(lm(sixmonth$deathpc ~ deaths.overall))
+
+################################
+
 #Case fatality ratio multilinear regression
 cfr.multi = lm(cfratio ~ prev_emergence_pathogens + early_detection + rapid_response + robust_health_sector 
                  + commitments + risk_environment, data = sixmonth)
@@ -40,16 +108,32 @@ cfr.risk = summary(cfr.multi)$coef[7,1]
 cfr.coefs = data.frame(cfr.intercept, cfr.prevent, cfr.detect, cfr.rapid, cfr.hs, cfr.compliance, cfr.risk)
 
 cfr.overall = current.prevent*cfr.prevent + current.detect*cfr.detect + current.rapid*cfr.rapid + 
-  current.hs*cfr.hs + current.compliance*cfr.compliance + current.risk*cfr.risk #removed intercept for now
+  current.hs*cfr.hs + current.compliance*cfr.compliance + current.risk*cfr.risk #no intercept ???
+
+cfr.overall = rescale(cfr.overall, mean = 0, sd = 1)
+
 
 #### NEW CFR POST NORMALIZATION ####
 cfr.new = lm(sixmonth$cfratio ~ cfr.overall)
 summary(cfr.new)$coef
 summary(cfr.new)$r.squared
 
-####
+###
 par(mfrow=c(1,1))
-plot(sixmonth$cfratio ~ cfr.overall, xlab = "Case Fatality Ratio", ylab = "Re-weighted overall score", 
+plot(sixmonth$cfratio ~ cfr.overall, ylab = "Case Fatality Ratio", xlab = "Re-weighted overall score", 
      main = "Case fatality ratio plotted against new overall GHSI Score", col = "blue")
 abline(cfr.new)
 summary(cfr.new)
+
+
+###### ORIGINAL ######
+
+cfr.simple = lm(cfratio ~ overall, data = sixmonth)
+summary(cfr.simple)$coef
+summary(cfr.simple)$r.squared
+
+par(mfrow=c(1,1))
+plot(cfratio ~ overall, data = sixmonth, ylab = "Case Fatality Ratio", xlab = "Overall score", 
+     main = "Case fatality ratio plotted against overall GHSI Score", col = "blue")
+abline(cfr.simple)
+summary(cfr.simple)
