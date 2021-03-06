@@ -48,5 +48,6 @@ add_country_codes('jhu_deaths_01.26.2021.csv', 'Country.Region')
 add_country_codes('world_bank_population.csv', 'country')
 add_country_codes('democracy_index.csv', 'Country')
 add_country_codes('ghsi_raw.csv', 'Country')
+add_country_codes('world_bank_gdp.csv', 'Country')
 
 print("Add country codes step complete.")

@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-`r sixmonth_data = na.omit(read.csv(".\\prepped_data\\sixmonth.csv"))`
+`r sixmonth_data = na.omit(read.csv(".\\prepped_data\\six_month_outlier_screened.csv"))`
 
 ## Question 1
 
@@ -25,9 +25,9 @@ plot(lm(casepc ~ overall, data = sixmonth_data))
 
 ```
 
-Coefficient estimate: 0.0637
+Coefficient estimate: 0.0621
 
-pvalue = 0.0387
+pvalue = 0.046
 
 ## Deaths per capita with overall GHSI score
 
@@ -59,9 +59,9 @@ plot(lm(cfratio ~ overall, data = sixmonth_data))
 
 ```
 
-Coefficient estimate: 0.0556
+Coefficient estimate: 0.074
 
-pvalue = .0012
+pvalue < .0001
 
 
 ## Question 2
