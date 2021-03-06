@@ -1,0 +1,119 @@
+---
+title: "Basic Regression"
+author: "Corina Geier"
+date: "2/21/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+`r sixmonth_data = na.omit(read.csv(".\\prepped_data\\six_month_outlier_screened.csv"))`
+
+## Question 1
+
+## Cases per capita with overall GHSI score
+
+```{r}
+
+summary(lm(casepc ~ overall, data = sixmonth_data))$coef
+
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+
+plot(lm(casepc ~ overall, data = sixmonth_data))
+
+```
+
+Coefficient estimate: 0.0621
+
+pvalue = 0.046
+
+## Deaths per capita with overall GHSI score
+
+
+``` {r}
+
+summary(lm(deathpc ~ overall, data = sixmonth_data))$coef
+
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+
+plot(lm(deathpc ~ overall, data = sixmonth_data))
+
+```
+
+Coefficient estimate: 0.0046
+
+pvalue < .0001
+
+## Case Fatality Ratio with overall GHSI score 
+
+
+```{r}
+
+summary(lm(cfratio ~ overall, data = sixmonth_data))$coef
+
+par(mfrow=c(2,2),mar=c(5,4,2,1))
+
+plot(lm(cfratio ~ overall, data = sixmonth_data))
+
+```
+
+Coefficient estimate: 0.074
+
+pvalue < .0001
+
+
+## Question 2
+
+## Cases per capita with each subcomponent
+
+```{r}
+
+subcomponents <- c("prev_emergence_pathogens", "early_detection", "rapid_response", "robust_health_sector", "commitments", "risk_environment")
+
+for(i in 1:length(subcomponents)) {
+  predictor_i <- (subcomponents)[i]
+  print(predictor_i)
+  print(summary(lm(casepc ~ ., data = sixmonth_data[,c("casepc",predictor_i)]))$coef)
+  par(mfrow=c(2,2),mar=c(5,4,2,1))
+  plot(lm(casepc ~ ., data = sixmonth_data[,c("casepc",predictor_i)]))
+}
+
+
+```
+
+
+
+## Deaths per capita with each subcomponent
+
+```{r}
+subcomponents <- c("prev_emergence_pathogens", "early_detection", "rapid_response", "robust_health_sector", "commitments", "risk_environment")
+
+for(i in 1:length(subcomponents)) {
+  predictor_i <- (subcomponents)[i]
+  print(predictor_i)
+  print(summary(lm(deathpc ~ ., data = sixmonth_data[,c("deathpc",predictor_i)]))$coef)
+  par(mfrow=c(2,2),mar=c(5,4,2,1))
+  plot(lm(deathpc ~ ., data = sixmonth_data[,c("deathpc",predictor_i)]))
+}
+
+
+```
+
+## Case Fatality Ratio with each subcomponent
+
+```{r}
+subcomponents <- c("prev_emergence_pathogens", "early_detection", "rapid_response", "robust_health_sector", "commitments", "risk_environment")
+
+for(i in 1:length(subcomponents)) {
+  predictor_i <- (subcomponents)[i]
+  print(predictor_i)
+  print(summary(lm(cfratio ~ ., data = sixmonth_data[,c("cfratio",predictor_i)]))$coef)
+  par(mfrow=c(2,2),mar=c(5,4,2,1))
+  plot(lm(cfratio ~ ., data = sixmonth_data[,c("cfratio",predictor_i)]))
+}
+
+
+```
+
