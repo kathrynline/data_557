@@ -16,28 +16,14 @@ knitr::opts_chunk$set(echo = TRUE)
 Start by loading the six month data:
 
 ```{r}
-data <- read.csv(file = '../prepped_data/sixmonth.csv')
-democracy <- read.csv(file = '../intermediate_data/democracy_index.csv')
-democracy <- democracy[c("X2019", "country_code")]
-colnames(democracy)[1] <- "democracy_index"
-merged <- merge(data, democracy, by=c('country_code'), all.x=TRUE, all.y=FALSE)
+data <- read.csv(file = '../prepped_data/six_month_outlier_screened.csv')
 ```
 
 ### Regressions on democracy index
 
 ```{r}
-summary(lm(formula = casepc ~ democracy_index, data = merged))
-plot(merged$democracy_index, merged$casepc, pch=19)
-```
-
-```{r}
-summary(lm(formula = deathpc ~ democracy_index, data = merged))
-plot(merged$democracy_index, merged$deathpc, pch=19)
-```
-
-```{r}
-summary(lm(formula = cfratio ~ democracy_index, data = merged))
-plot(merged$democracy_index, merged$cfratio, pch=19)
+summary(lm(formula = cfratio ~ democracy_index, data = data))
+plot(data$democracy_index, data$cfratio, pch=19)
 ```
 
 From these plots, it appears that democracy index isn't a good predictor of
@@ -47,8 +33,8 @@ where the highest deaths-per-capita are in high democracy index countries.
 ### Regressions on GHSI subcomponent scores and democracy index
 
 ```{r}
-summary(lm(formula = casepc ~ prev_emergence_pathogens + early_detection + rapid_response + robust_health_sector + commitments + risk_environment, data = merged))
-summary(lm(formula = casepc ~ prev_emergence_pathogens + early_detection + rapid_response + robust_health_sector + commitments + risk_environment + democracy_index, data = merged))
+summary(lm(formula = casepc ~ prev_emergence_pathogens + early_detection + rapid_response + robust_health_sector + commitments + risk_environment, data = data))
+summary(lm(formula = casepc ~ prev_emergence_pathogens + early_detection + rapid_response + robust_health_sector + commitments + risk_environment + democracy_index, data = data))
 ```
 
 For this regression, we see that the democracy index coefficient is
